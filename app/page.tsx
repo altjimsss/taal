@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { HeroSlideshow } from "./components/HeroSlideshow";
+import HeroMount from "./components/HeroMount";
+import NavbarWrapper from "./components/NavbarWrapper";
+import ValueCarousel from "./components/ValueCarousel";
+import ScrollReveal from "./components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Taal — Heritage Town of the Philippines",
@@ -10,24 +13,35 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
+      {/* ===== GLOBAL ARCHITECTURAL FRAME LINES ===== */}
+      <div className="page-frame-line line-left" aria-hidden="true" />
+      <div className="page-frame-line line-right" aria-hidden="true" />
+      <div className="page-frame-line line-top" aria-hidden="true" />
+      <ScrollReveal />
+
+      {/* ===== NAVBAR — outside hero so overflow:hidden doesn't block blur ===== */}
+      <NavbarWrapper>
+        <div className="logo-square">
+          <span className="dot" />
+        </div>
+        <div className="brand-name">
+          TAAL
+        </div>
+        <nav className="nav-menu">
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Heritage</a></li>
+            <li><a href="#">Attractions</a></li>
+            <li><a href="#">Food</a></li>
+            <li><a href="#">Visit</a></li>
+          </ul>
+        </nav>
+        <div className="corner-square-right" />
+      </NavbarWrapper>
+
       {/* ===== HERO — full-bleed, fills the screen ===== */}
       <section className="hero">
-        <HeroSlideshow />
-        <div className="navbar">
-          <div className="logo">
-            <span className="dot" />
-            Taal·Batangas
-          </div>
-          <nav>
-            <ul>
-              <li><a href="#">Home</a></li>
-              <li><a href="#">Heritage</a></li>
-              <li><a href="#">Attractions</a></li>
-              <li><a href="#">Food</a></li>
-              <li><a href="#">Visit</a></li>
-            </ul>
-          </nav>
-        </div>
+        <HeroMount />
         <div className="hero-content">
           <h1>TAAL</h1>
           <p>
@@ -35,38 +49,40 @@ export default function Home() {
             Some places are worth slowing down for.
           </p>
         </div>
-        <div className="hero-search">
-          <div className="field">
-            <div className="label">Activity/Goal</div>
-            <div className="value">Heritage / Coffee / Craft</div>
+        {/* ===== HERO BOTTOM BAR (Framed by 72px grid) ===== */}
+        <div className="hero-bottom-bar">
+          <div className="corner-square-bottom-left" />
+          <div className="hero-search-inner">
+            <div className="field">
+              <div className="label">Activity/Goal</div>
+              <div className="value">Heritage / Coffee / Craft</div>
+            </div>
+            <div className="field">
+              <div className="label">Location</div>
+              <div className="value">Taal, Batangas</div>
+            </div>
+            <div className="field">
+              <div className="label">Date/Duration</div>
+              <div className="value">Dec–May · 1 day</div>
+            </div>
+            <div className="field">
+              <div className="label">Budget</div>
+              <div className="value">₱0 – ₱5,000</div>
+            </div>
           </div>
-          <div className="field">
-            <div className="label">Location</div>
-            <div className="value">Taal, Batangas</div>
+          <div className="explore-square">
+            <button type="button" className="explore-btn" aria-label="Explore">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
           </div>
-          <div className="field">
-            <div className="label">Date/Duration</div>
-            <div className="value">Dec–May · 1 day</div>
-          </div>
-          <div className="field">
-            <div className="label">Budget</div>
-            <div className="value">₱0 – ₱5,000</div>
-          </div>
-          <div className="explore">Explore</div>
         </div>
       </section>
 
-      <div className="page">
       {/* ===== TRUST STRIP ===== */}
       <section className="trust-strip">
-        <div className="badge blue">
-          <span className="icon" />
-          Heritage Town of the Philippines
-        </div>
-        <div className="badge gold">
-          <span className="icon" />
-          100+ ancestral houses
-        </div>
         <div className="squares">
           <span />
           <span />
@@ -74,17 +90,16 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="page">
       {/* ===== HEADLINE ===== */}
       <section className="headline">
         <h2>
-          Taal means the past,
-          <br />
-          Going <span className="highlight">home</span>
+          Walk through history, feel at <span className="highlight">home</span>
         </h2>
-        <div className="dotted-divider">
-          <span className="dot-l" />
-          <span className="line" />
-          <span className="pin" />
+        <div className="trust-badges">
+          <span className="trust-pill">Heritage Town of the Philippines</span>
+          <span className="trust-divider">•</span>
+          <span className="trust-pill">100+ ancestral houses</span>
         </div>
       </section>
 
@@ -92,44 +107,11 @@ export default function Home() {
       <section className="value-section">
         <div className="value-left">
           <span className="tag">01 Our Value</span>
-          <h3>Not Your Boring Heritage Town</h3>
+          <h3>A Heritage Town Worth Slowing For</h3>
           <p>We plan slow, curated trips with good stories and better people.</p>
           <button type="button" className="btn-flat">Book a Heritage Walk</button>
         </div>
-        <div className="value-right">
-          <div className="card tall">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop"
-              alt="The Basilica of St. Martin"
-            />
-            <span className="tag-chip">Basilica</span>
-          </div>
-          <div className="card short">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600&auto=format&fit=crop"
-              alt="Ancestral street"
-            />
-            <span className="tag-chip">Plaza</span>
-          </div>
-          <div className="card short">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://images.unsplash.com/photo-1470770841076-0e2f4a6c8a6e?q=80&w=600&auto=format&fit=crop"
-              alt="Craft during golden hour"
-            />
-            <span className="tag-chip">Walk</span>
-          </div>
-          <div className="caption">
-            <div className="place">Taal, Batangas</div>
-            <div className="desc">Heritage walk with local guides</div>
-          </div>
-          <div className="nav-controls">
-            <span>← Prev</span>
-            <span>Next →</span>
-          </div>
-        </div>
+        <ValueCarousel />
       </section>
 
       {/* ===== PICK THE PLACE ===== */}
@@ -233,8 +215,191 @@ export default function Home() {
               <span className="m">Dry season</span>
             </div>
           </div>
+
+          <div className="dest-card">
+            <div className="dest-top">
+              <div>
+                <div className="place">San Martin Chapel</div>
+                <div className="sub">Barangay Dueño</div>
+              </div>
+              <div className="slots">★ Golden hour</div>
+            </div>
+            <div className="image-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=700&auto=format&fit=crop"
+                alt="Heritage street at dusk"
+              />
+              <span className="open-trip">Open Trip</span>
+            </div>
+            <div className="meta-row">
+              <span className="m">Free</span>
+              <span className="m">Sunrise</span>
+              <span className="m">All year</span>
+            </div>
+          </div>
+
+          <div className="dest-card">
+            <div className="dest-top">
+              <div>
+                <div className="place">Taal Lake Lookout</div>
+                <div className="sub">Caldera viewpoint</div>
+              </div>
+              <div className="slots">★ Panorama</div>
+            </div>
+            <div className="image-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=700&auto=format&fit=crop"
+                alt="Lake and shoreline"
+              />
+              <span className="open-trip">Open Trip</span>
+            </div>
+            <div className="meta-cols">
+              <div>View<b>Full lake</b></div>
+              <div>Entry<b>Free</b></div>
+              <div>Best<b>Dawn</b></div>
+            </div>
+          </div>
+
+          <div className="dest-card">
+            <div className="dest-top">
+              <div>
+                <div className="place">Ancestral Street</div>
+                <div className="sub">Cobblestone walk</div>
+              </div>
+              <div className="slots">★ Guided stroll</div>
+            </div>
+            <div className="image-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=700&auto=format&fit=crop"
+                alt="Cobblestone street"
+              />
+              <span className="open-trip">Open Trip</span>
+            </div>
+            <div className="meta-row">
+              <span className="m">₱20.00</span>
+              <span className="m">1 hr</span>
+              <span className="m">Daily</span>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* ===== FEATURED PICK ===== */}
+      <section className="feature-section">
+        <div className="pick-header">
+          <div>
+            <span className="tag">Heart of the Town · 2026</span>
+            <h2>This Season&apos;s Featured</h2>
+          </div>
+          <div className="sub">
+            One hand-picked walk, our favorites in full detail.
+          </div>
+        </div>
+
+        <div className="feature-card">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="feature-bg"
+            src="https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=1600&auto=format&fit=crop"
+            alt="Basilica of Taal at golden hour"
+          />
+          <div className="feature-info">
+            <span className="tag">★ Featured Walk · 3 hours</span>
+            <h3>Basilica &amp; the Ancients</h3>
+            <p>
+              A slow walk from the grand Basilica through cobblestone lanes and
+              ancestral homes, with local stories at every turn.
+            </p>
+            <div className="feature-meta">
+              <span>₱300 / person</span>
+              <span>2x daily</span>
+              <span>Guide included</span>
+            </div>
+            <button type="button" className="btn-flat">Book this walk</button>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== HOW IT WORKS ===== */}
+      <section className="steps-section">
+        <div className="pick-header">
+          <div>
+            <span className="tag">Simple · Slow · Local</span>
+            <h2>How it Works</h2>
+          </div>
+          <div className="sub">
+            Three easy steps to a memorable day in Taal.
+          </div>
+        </div>
+
+        <div className="steps">
+          <div className="step">
+            <div className="step-num">01</div>
+            <h4>Choose your walk</h4>
+            <p>Pick from curated heritage, food, or people tours.</p>
+          </div>
+          <div className="step">
+            <div className="step-num">02</div>
+            <h4>Pick a date</h4>
+            <p>Reserve your slot in just a few taps.</p>
+          </div>
+          <div className="step">
+            <div className="step-num">03</div>
+            <h4>Slow down & arrive</h4>
+            <p>A local guide leads you through the story of the town.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== TESTIMONIALS ===== */}
+      <section className="testi-section">
+        <div className="pick-header">
+          <div>
+            <span className="tag">What Guests Say · 2026</span>
+            <h2>Kept at the Top of Our Minds</h2>
+          </div>
+          <div className="sub">
+            A few words from people who took it slow.
+          </div>
+        </div>
+
+        <div className="testimonial">
+          <p className="quote">
+            &ldquo;The best part of Taal was the pace. No rushing, just stories and
+            coffee on a cobblestone lane.&rdquo;
+          </p>
+          <div className="byline">— Miguel R., guided heritage walk</div>
+        </div>
+      </section>
+
+      {/* ===== NEWSLETTER / CTA ===== */}
+      <section className="cta-section">
+        <h2>Plan a slow day in Taal</h2>
+        <p className="sub">
+          Get new walks and heritage picks straight to your inbox.
+        </p>
+        <form className="cta-form">
+          <input type="email" placeholder="Your email" aria-label="Email address" />
+          <button type="submit" className="btn-flat">Get the newsletter</button>
+        </form>
+      </section>
+
+      {/* ===== FOOTER ===== */}
+      <footer className="footer">
+        <div className="footer-brand">TAAL</div>
+        <nav className="footer-links">
+          <a href="#">Heritage</a>
+          <a href="#">Attractions</a>
+          <a href="#">Food</a>
+          <a href="#">Visit</a>
+        </nav>
+        <div className="footer-note">
+          © 2026 Taal Heritage Town. Made for slow travelers.
+        </div>
+      </footer>
       </div>
     </>
   );

@@ -1,34 +1,47 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 import gsap from "gsap";
 
-/* Fallback if a Wikimedia image fails to load (e.g. blocked on user's network). */
-const FALLBACK_IMG =
-  "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?q=80&w=1200&auto=format&fit=crop";
-
+/* Unsplash CDN (the same one already used elsewhere on this page) instead of
+   Wikimedia's thumbnail proxy, which throttles/403s requests from
+   datacenter/cloud IP ranges. Every slide also keeps its OWN fallback so one
+   failed image can never collapse all six strips to an identical backup. */
 const SLIDES = [
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Minor_Basilica_of_Saint_Martin_of_Tours_%28Taal_Basilica%29_-_Taal%2C_Batangas%2C_Philippines.jpg/1280px-Minor_Basilica_of_Saint_Martin_of_Tours_%28Taal_Basilica%29_-_Taal%2C_Batangas%2C_Philippines.jpg",
+    src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1600&auto=format&fit=crop",
+    fallback:
+      "https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=1600&auto=format&fit=crop",
     alt: "Minor Basilica of Saint Martin de Tours in Taal, Batangas",
   },
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Ancestral_House_in_Taal%2C_Batangas.jpg/1280px-Ancestral_House_in_Taal%2C_Batangas.jpg",
-    alt: "Ancestral house in Taal, Batangas",
+    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop",
+    fallback:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1600&auto=format&fit=crop",
+    alt: "Ancestral houses in Taal, Batangas",
   },
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Taal_Volcano_aerial_2013.jpg/1280px-Taal_Volcano_aerial_2013.jpg",
+    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1600&auto=format&fit=crop",
+    fallback:
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop",
     alt: "Taal Volcano rising from Taal Lake",
   },
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Minor_Basilica_of_Saint_Martin_of_Tours_or_Taal_Basilica_85M7772.jpg/1280px-Minor_Basilica_of_Saint_Martin_of_Tours_or_Taal_Basilica_85M7772.jpg",
-    alt: "Minor Basilica of Saint Martin de Tours, Taal, Batangas",
+    src: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop",
+    fallback:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600&auto=format&fit=crop",
+    alt: "Heritage streets and valley light in Taal, Batangas",
   },
 ];
 
-const STRIP_COUNT = 6;
-const AUTOPLAY_MS = 5000;
+/* Strip layout mirrors the 72-px architectural grid:
+   [72px] [inner×4 equal] [72px]
+   — outer strips align with the corner-square boxes,
+   — inner strips align with the 4 hero-search field separators. */
+const CORNER = 72; // px, matches .corner-square-bottom-left / .explore-square
+const STRIP_COUNT = 6; // 1 left + 4 inner + 1 right
+const AUTOPLAY_MS = 3800;
 const OUT_S = 0.5;
 const IN_S = 0.8;
 const OUT_STAGGER = 0.04;
@@ -37,16 +50,12 @@ const DIRECTIONS = ["start", "center", "end"] as const;
 
 export function HeroSlideshow() {
   const stripRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const slideshowRef = useRef<HTMLDivElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const indexRef = useRef(0);
   const animatingRef = useRef(false);
-  const pendingRef = useRef<number | null>(null);
-  /* Latest-callback ref so the timeline onComplete can dispatch a queued
-     dot click without self-referencing goToSlide (avoids react-hooks/immutability). */
-  const goToSlideRef = useRef<((next: number) => void) | null>(null);
   const dirRef = useRef(0);
-  const [index, setIndex] = useState(0);
 
   const getStrips = useCallback(
     () => stripRefs.current.filter((el): el is HTMLDivElement => el !== null),
@@ -55,26 +64,37 @@ export function HeroSlideshow() {
 
   const applyImage = useCallback(
     (slideIndex: number) => {
-      const src = SLIDES[slideIndex].src;
+      const slide = SLIDES[slideIndex];
       getStrips().forEach((strip) => {
         const img = strip.querySelector("img");
-        if (img) img.src = src;
+        if (img) {
+          img.dataset.fallback = slide.fallback;
+          img.src = slide.src;
+        }
       });
     },
     [getStrips],
   );
 
+  /* If the primary fails (blocked/firewall), fall through to that slide's own
+     backup image — a failed slide never collapses the whole hero. */
   const handleImgError = useCallback(
     (e: React.SyntheticEvent<HTMLImageElement>) => {
       const img = e.currentTarget;
-      if (img.src !== FALLBACK_IMG) img.src = FALLBACK_IMG;
+      const fallback = img.dataset.fallback;
+      if (fallback && img.src !== fallback) img.src = fallback;
     },
     [],
   );
 
   const preload = useCallback((slideIndex: number) => {
-    const img = new Image();
-    img.src = SLIDES[slideIndex].src;
+    /* Preload both the primary and the slide's own fallback so an onError
+       swap never flashes in late from the network. */
+    const slide = SLIDES[slideIndex];
+    [slide.src, slide.fallback].forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
   }, []);
 
   const goToSlide = useCallback(
@@ -84,7 +104,7 @@ export function HeroSlideshow() {
 
       animatingRef.current = true;
       indexRef.current = target;
-      setIndex(target);
+      preload((target + 1) % SLIDES.length);
 
       const strips = getStrips();
       if (strips.length === 0) {
@@ -102,38 +122,44 @@ export function HeroSlideshow() {
         return;
       }
 
-      const dir = DIRECTIONS[dirRef.current % DIRECTIONS.length];
-      dirRef.current += 1;
+      try {
+        const dir = DIRECTIONS[dirRef.current % DIRECTIONS.length];
+        dirRef.current += 1;
 
-      timelineRef.current?.kill();
-      const tl = gsap.timeline({
-        onComplete: () => {
-          animatingRef.current = false;
-          if (pendingRef.current !== null) {
-            const queued = pendingRef.current;
-            pendingRef.current = null;
-            goToSlideRef.current?.(queued);
-          }
-        },
-      });
-      tl.to(strips, {
-        scaleY: 0,
-        duration: OUT_S,
-        stagger: { each: OUT_STAGGER, from: dir },
-        ease: "power3.in",
-        overwrite: "auto",
-      });
-      tl.call(() => applyImage(target));
-      tl.to(strips, {
-        scaleY: 1,
-        duration: IN_S,
-        stagger: { each: IN_STAGGER, from: dir },
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-      timelineRef.current = tl;
-
-      preload((target + 1) % SLIDES.length);
+        timelineRef.current?.kill();
+        const tl = gsap.timeline({
+          onComplete: () => {
+            animatingRef.current = false;
+          },
+        });
+        tl.to(strips, {
+          scaleY: 0,
+          duration: OUT_S,
+          stagger: { each: OUT_STAGGER, from: dir },
+          ease: "power3.in",
+          overwrite: "auto",
+        });
+        tl.call(() => applyImage(target));
+        tl.to(strips, {
+          scaleY: 1,
+          duration: IN_S,
+          stagger: { each: IN_STAGGER, from: dir },
+          ease: "power3.out",
+          overwrite: "auto",
+        });
+        timelineRef.current = tl;
+      } catch {
+        /* GSAP failed for any reason — degrade gracefully: swap the image and
+           force every strip fully open so the hero is never stuck mid-wipe. */
+        console.warn(
+          "[HeroSlideshow] GSAP transition failed; fell back to an instant swap.",
+        );
+        applyImage(target);
+        strips.forEach((strip) => {
+          strip.style.transform = "scaleY(1)";
+        });
+        animatingRef.current = false;
+      }
     },
     [applyImage, getStrips, preload],
   );
@@ -153,28 +179,29 @@ export function HeroSlideshow() {
     );
   }, [goToSlide, stopTimer]);
 
-  /* keep the latest goToSlide reachable from the timeline's onComplete */
-  useLayoutEffect(() => {
-    goToSlideRef.current = goToSlide;
-  }, [goToSlide]);
-
+  /* Mount: GSAP strip reveal on first paint. useLayoutEffect runs before the
+     browser paints, so setting scaleY:0 here never flashes the full image.
+     Reduced-motion users skip the animation and stay fully open. */
   useLayoutEffect(() => {
     const strips = getStrips();
     applyImage(0);
     preload(1);
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (!reduced) {
-      // CSS owns the hidden state (scaleY: 0); JS only reveals
-      gsap.to(strips, {
-        scaleY: 1,
-        duration: IN_S,
-        stagger: { each: IN_STAGGER, from: "start" },
-        ease: "power3.out",
-        overwrite: "auto",
-      });
+      gsap.fromTo(
+        strips,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          duration: 1,
+          stagger: IN_STAGGER,
+          ease: "power3.inOut",
+        },
+      );
     }
-    // reduced-motion: the CSS media query already shows scaleY(1)
 
     startTimer();
     return () => {
@@ -184,75 +211,99 @@ export function HeroSlideshow() {
     };
   }, [applyImage, getStrips, preload, startTimer, stopTimer]);
 
+  /* Measure the slideshow's actual pixel width and expose it as --hero-w.
+     This must use clientWidth (not 100vw) so it matches the hero-bottom-bar
+     which is also sized by the container, not the viewport (excludes scrollbar
+     width on Windows). The CSS var is used for image left offsets so strip
+     seams align pixel-perfectly with the hero-search separator lines. */
+  useLayoutEffect(() => {
+    const el = slideshowRef.current;
+    if (!el) return;
+    const sync = () =>
+      el.style.setProperty("--hero-w", `${el.clientWidth}px`);
+    sync();
+    window.addEventListener("resize", sync, { passive: true });
+    return () => window.removeEventListener("resize", sync);
+  }, []);
+
   return (
     <div
       className="hero-slideshow"
+      ref={slideshowRef}
       aria-roledescription="carousel"
       aria-label="Scenes of Taal, Batangas"
     >
-      {Array.from({ length: STRIP_COUNT }).map((_, i) => (
-        <div
-          key={i}
-          className="hero-strip"
-          style={
-            {
-              "--strip-i": i,
-              "--hero-strips": STRIP_COUNT,
-            } as CSSProperties
-          }
-          ref={(el) => {
-            stripRefs.current[i] = el;
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={SLIDES[0].src}
-            alt=""
-            onError={handleImgError}
-            style={{
-              width: `${STRIP_COUNT * 100}%`,
-              left: `${-i * 100}%`,
+      {Array.from({ length: STRIP_COUNT }).map((_, i) => {
+        // Strip layout mirrors the 72-px architectural grid:
+        //   [72px] [ equal×4 inner ] [72px]
+        //
+        // IMAGE OFFSET KEY:
+        //   `left` on <img> is relative to the STRIP's width (its containing block),
+        //   NOT the full slideshow. We use `vw` units so the offset is always
+        //   viewport-relative and correctly cancels the strip's viewport position,
+        //   producing a seamless single-photo appearance across all 6 strips.
+        //
+        // SEAM:
+        //   Each strip (except the last) is 0.5px wider than its slot so
+        //   sub-pixel rounding never leaves a gap between adjacent strips.
+
+        const SEAM = "0.5px";
+        const INNER = STRIP_COUNT - 2; // 4 inner strips
+
+        let stripLeft: string;
+        let stripWidth: string;
+        let imgLeft: string;
+
+        if (i === 0) {
+          // ── Left corner strip ──────────────────────────────────────────
+          // Strip left uses 100% (= slideshow width = hero width).
+          // Image left = 0 (starts at left edge, no offset needed).
+          stripLeft = "0px";
+          stripWidth = `calc(${CORNER}px + ${SEAM})`;
+          imgLeft = "0px";
+        } else if (i === STRIP_COUNT - 1) {
+          // ── Right corner strip ─────────────────────────────────────────
+          // Strip left = 100% - 72px (slideshow-relative, correct).
+          // Image left = -(hero width - 72px), using --hero-w (px) so it
+          // references the same coordinate system as the strip's 100%.
+          stripLeft = `calc(100% - ${CORNER}px)`;
+          stripWidth = `${CORNER}px`;
+          imgLeft = `calc(-1 * var(--hero-w, 100vw) + ${CORNER}px)`;
+        } else {
+          // ── Inner strip n (i = 1…4) ────────────────────────────────────
+          // Strip left expressed with 100% (slideshow-relative).
+          // Image left uses var(--hero-w) so it matches the strip's coordinate.
+          const n = i - 1;
+          stripLeft = `calc(${CORNER}px + ${n} * (100% - ${2 * CORNER}px) / ${INNER})`;
+          stripWidth = `calc((100% - ${2 * CORNER}px) / ${INNER} + ${SEAM})`;
+          imgLeft = `calc(-${CORNER}px - ${n} * (var(--hero-w, 100vw) - ${2 * CORNER}px) / ${INNER})`;
+        }
+
+        return (
+          <div
+            key={i}
+            className="hero-strip"
+            style={{ left: stripLeft, width: stripWidth } as CSSProperties}
+            ref={(el) => {
+              stripRefs.current[i] = el;
             }}
-          />
-        </div>
-      ))}
-
-      {/* If JS is disabled/blocked, reveal the first slide via CSS
-          instead of leaving the hero blank (noscript is inert when JS runs) */}
-      <noscript>
-        <style>{`.hero-strip { transform: scaleY(1); }`}</style>
-      </noscript>
-
-      <span className="hero-geo-corner hero-geo-corner--tl" aria-hidden />
-      <span className="hero-geo-corner hero-geo-corner--tr" aria-hidden />
-      <span className="hero-geo-corner hero-geo-corner--bl" aria-hidden />
-      <span className="hero-geo-corner hero-geo-corner--br" aria-hidden />
-
-      <div
-        className="hero-dots"
-        aria-label="Taal photos"
-        onMouseEnter={stopTimer}
-        onMouseLeave={startTimer}
-      >
-        {SLIDES.map((slide, i) => (
-          <button
-            key={slide.src}
-            type="button"
-            aria-label={`Go to photo ${i + 1}: ${slide.alt}`}
-            aria-current={i === index ? "true" : undefined}
-            className={`hero-dot${i === index ? " is-active" : ""}`}
-            onClick={() => {
-              stopTimer();
-              if (animatingRef.current) {
-                if (i !== indexRef.current) pendingRef.current = i;
-              } else {
-                goToSlide(i);
-              }
-              startTimer();
-            }}
-          />
-        ))}
-      </div>
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={SLIDES[0].src}
+              data-fallback={SLIDES[0].fallback}
+              alt=""
+              onError={handleImgError}
+              style={{
+                width: "var(--hero-w, 100vw)",
+                maxWidth: "none",
+                left: imgLeft,
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
+
