@@ -129,13 +129,9 @@ img {
   min-height: 620px;
   overflow: hidden;
 }
-.hero img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+/* NOTE: .hero img was removed - the hero has no direct <img> children
+   (only HeroSlideshow, .hero-content, .hero-search). Strips are styled
+   via .hero-strip img below. */
 .hero::after {
   content: "";
   position: absolute;
@@ -160,9 +156,13 @@ img {
   position: absolute;
   top: 0;
   height: 100%;
+  /* --strip-i / --hero-strips are set inline by HeroSlideshow; the tiny
+     +0.5px overlap hides subpixel seams between adjacent strips */
+  width: calc(100% / var(--hero-strips, 6) + 0.5px);
+  left: calc(var(--strip-i) * 100% / var(--hero-strips, 6));
   overflow: hidden;
   transform-origin: top;
-  /* photos visible by default; JS hides+reveals (no-JS / JS-error safe) */
+  transform: scaleY(0); /* hidden in CSS: no first-paint flash, JS only reveals */
   background: #27415f;
   will-change: transform;
 }
@@ -171,6 +171,12 @@ img {
   top: 0;
   height: 100%;
   object-fit: cover;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* reduced-motion: show the photo immediately, no reveal animation */
+  .hero-strip {
+    transform: scaleY(1);
+  }
 }
 
 /* geometric corner accents */

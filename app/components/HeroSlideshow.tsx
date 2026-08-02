@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import gsap from "gsap";
 
 /* Fallback if a Wikimedia image fails to load (e.g. blocked on user's network). */
@@ -40,6 +41,10 @@ export function HeroSlideshow() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const indexRef = useRef(0);
   const animatingRef = useRef(false);
+  const pendingRef = useRef<number | null>(null);
+  /* Latest-callback ref so the timeline onComplete can dispatch a queued
+     dot click without self-referencing goToSlide (avoids react-hooks/immutability). */
+  const goToSlideRef = useRef<((next: number) => void) | null>(null);
   const dirRef = useRef(0);
   const [index, setIndex] = useState(0);
 
@@ -104,6 +109,11 @@ export function HeroSlideshow() {
       const tl = gsap.timeline({
         onComplete: () => {
           animatingRef.current = false;
+          if (pendingRef.current !== null) {
+            const queued = pendingRef.current;
+            pendingRef.current = null;
+            goToSlideRef.current?.(queued);
+          }
         },
       });
       tl.to(strips, {
@@ -143,18 +153,19 @@ export function HeroSlideshow() {
     );
   }, [goToSlide, stopTimer]);
 
+  /* keep the latest goToSlide reachable from the timeline's onComplete */
+  useLayoutEffect(() => {
+    goToSlideRef.current = goToSlide;
+  }, [goToSlide]);
+
   useLayoutEffect(() => {
     const strips = getStrips();
     applyImage(0);
     preload(1);
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      // already visible by default in CSS
-      gsap.set(strips, { scaleY: 1 });
-    } else {
-      // hide before paint, then reveal so there is no flash
-      gsap.set(strips, { scaleY: 0 });
+    if (!reduced) {
+      // CSS owns the hidden state (scaleY: 0); JS only reveals
       gsap.to(strips, {
         scaleY: 1,
         duration: IN_S,
@@ -163,6 +174,7 @@ export function HeroSlideshow() {
         overwrite: "auto",
       });
     }
+    // reduced-motion: the CSS media query already shows scaleY(1)
 
     startTimer();
     return () => {
@@ -182,10 +194,12 @@ export function HeroSlideshow() {
         <div
           key={i}
           className="hero-strip"
-          style={{
-            width: `${100 / STRIP_COUNT}%`,
-            left: `${(i * 100) / STRIP_COUNT}%`,
-          }}
+          style={
+            {
+              "--strip-i": i,
+              "--hero-strips": STRIP_COUNT,
+            } as CSSProperties
+          }
           ref={(el) => {
             stripRefs.current[i] = el;
           }}
@@ -202,6 +216,12 @@ export function HeroSlideshow() {
           />
         </div>
       ))}
+
+      {/* If JS is disabled/blocked, reveal the first slide via CSS
+          instead of leaving the hero blank (noscript is inert when JS runs) */}
+      <noscript>
+        <style>{`.hero-strip { transform: scaleY(1); }`}</style>
+      </noscript>
 
       <span className="hero-geo-corner hero-geo-corner--tl" aria-hidden />
       <span className="hero-geo-corner hero-geo-corner--tr" aria-hidden />
@@ -223,7 +243,11 @@ export function HeroSlideshow() {
             className={`hero-dot${i === index ? " is-active" : ""}`}
             onClick={() => {
               stopTimer();
-              goToSlide(i);
+              if (animatingRef.current) {
+                if (i !== indexRef.current) pendingRef.current = i;
+              } else {
+                goToSlide(i);
+              }
               startTimer();
             }}
           />
