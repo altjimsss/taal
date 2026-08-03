@@ -227,7 +227,7 @@ img {
   width: 1px;
 }
 .page-frame-stroke.line-left {
-  width: 1px;
+  width: 0.5px;
 }
 .page-frame-line.line-right,
 .page-frame-stroke.line-right {
@@ -237,7 +237,7 @@ img {
   width: 1px;
 }
 .page-frame-stroke.line-right {
-  width: 1px;
+  width: 0.5px;
 }
 .page-frame-line.line-top,
 .page-frame-stroke.line-top {
@@ -247,7 +247,7 @@ img {
   height: 1px;
 }
 .page-frame-stroke.line-top {
-  height: 1px;
+  height: 0.5px;
 }
 .page-frame-line.line-bottom,
 .page-frame-stroke.line-bottom {
@@ -257,7 +257,7 @@ img {
   height: 1px;
 }
 .page-frame-stroke.line-bottom {
-  height: 1px;
+  height: 0.5px;
 }
 .page-frame-line::before {
   content: "";
@@ -313,7 +313,8 @@ html.shutter-active .page-frame-line {
   background: rgba(255, 255, 255, 0.01);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease,
+    opacity 0.45s ease;
 }
 .navbar--scrolled {
   background: #ffffff;
@@ -340,6 +341,9 @@ html.shutter-active .page-frame-line {
 .navbar--scrolled .logo-square .dot {
   border-color: #15263c;
 }
+.navbar--hero .logo-square .dot {
+  border-color: #ffffff;
+}
 
 .navbar .brand-name {
   padding-left: 20px;
@@ -353,10 +357,13 @@ html.shutter-active .page-frame-line {
 .navbar--scrolled .brand-name {
   color: #15263c;
 }
+.navbar--hero .brand-name {
+  color: #ffffff;
+}
 
 .navbar .nav-menu {
   margin-left: auto;
-  padding-right: 40px;
+  padding-right: 96px;
 }
 .navbar .nav-menu ul {
   display: flex;
@@ -382,6 +389,9 @@ html.shutter-active .page-frame-line {
 .navbar--scrolled .nav-menu a {
   color: #15263c;
 }
+.navbar--hero .nav-menu a {
+  color: #ffffff;
+}
 
 .navbar .corner-square-right {
   width: 72px;
@@ -396,8 +406,8 @@ html.shutter-active .page-frame-line {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 40px 128px;
+  justify-content: center;
+  padding: 0 40px 64px;
   color: #fff;
   text-align: center;
 }
@@ -426,7 +436,7 @@ html.shutter-active .page-frame-line {
   z-index: 5;
   display: flex;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #d7dbe1;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -446,7 +456,7 @@ html.shutter-active .page-frame-line {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid #d7dbe1;
 }
 .hero-bottom-bar .hero-search-inner .field:last-child {
   border-right: none;

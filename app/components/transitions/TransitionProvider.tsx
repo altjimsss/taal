@@ -32,10 +32,7 @@ export const TransitionContext = createContext<TransitionContextValue | null>(
 
 const GRID = 72;
 const RISE_DURATION = 0.2;
-const CONVERGE_PRIMARY_DURATION = 0.5;
-const CONVERGE_SECONDARY_DURATION = 0.42;
-const SECONDARY_DELAY =
-  CONVERGE_PRIMARY_DURATION - CONVERGE_SECONDARY_DURATION;
+const CONVERGE_DURATION = 0.6;
 const RETREAT_DURATION = 0.5;
 const DESCEND_DURATION = 0.2;
 
@@ -118,14 +115,6 @@ export default function TransitionProvider({
     return [lineRefs.current[key], strokeRefs.current[key]].filter(Boolean);
   }, []);
 
-  const getLine = useCallback((key: keyof LineRefs) => {
-    return lineRefs.current[key];
-  }, []);
-
-  const getStroke = useCallback((key: keyof LineRefs) => {
-    return strokeRefs.current[key];
-  }, []);
-
   const getAllLines = useCallback(() => {
     const lines = lineRefs.current;
     const strokes = strokeRefs.current;
@@ -154,9 +143,9 @@ export default function TransitionProvider({
     gsap.set(lines.right, { right: xR });
 
     gsap.set(strokes.top, { top: yT });
-    gsap.set(strokes.bottom, { bottom: yB });
+    gsap.set(strokes.bottom, { bottom: yB + 0.5 });
     gsap.set(strokes.left, { left: xL });
-    gsap.set(strokes.right, { right: xR });
+    gsap.set(strokes.right, { right: xR + 0.5 });
   }, []);
 
   const prefetch = useCallback(
@@ -195,19 +184,19 @@ export default function TransitionProvider({
           ease: "power2.out",
         });
         tl.to(
-          getLine("bottom"),
+          getLinePair("top"),
           {
-            bottom: yB,
-            duration: CONVERGE_PRIMARY_DURATION,
+            top: yT,
+            duration: CONVERGE_DURATION,
             ease: "power2.inOut",
           },
           ">",
         );
         tl.to(
-          getStroke("bottom"),
+          getLinePair("bottom"),
           {
             bottom: yB,
-            duration: CONVERGE_PRIMARY_DURATION,
+            duration: CONVERGE_DURATION,
             ease: "power2.inOut",
           },
           "<",
@@ -216,34 +205,16 @@ export default function TransitionProvider({
           getLinePair("left"),
           {
             left: xL,
-            duration: CONVERGE_PRIMARY_DURATION,
+            duration: CONVERGE_DURATION,
             ease: "power2.inOut",
           },
           "<",
         );
         tl.to(
-          getLinePair("top"),
-          {
-            top: yT,
-            duration: CONVERGE_SECONDARY_DURATION,
-            ease: "power2.inOut",
-          },
-          `<${SECONDARY_DELAY}`,
-        );
-        tl.to(
-          getLine("right"),
+          getLinePair("right"),
           {
             right: xR,
-            duration: CONVERGE_SECONDARY_DURATION,
-            ease: "power2.inOut",
-          },
-          "<",
-        );
-        tl.to(
-          getStroke("right"),
-          {
-            right: xR,
-            duration: CONVERGE_SECONDARY_DURATION,
+            duration: CONVERGE_DURATION,
             ease: "power2.inOut",
           },
           "<",
@@ -254,7 +225,7 @@ export default function TransitionProvider({
         resolve();
       }
     });
-  }, [getAllLines, getLine, getLinePair, getStroke, lockCenterCross]);
+  }, [getAllLines, getLinePair, lockCenterCross]);
 
   const openShutter = useCallback(() => {
     return new Promise<void>((resolve) => {
