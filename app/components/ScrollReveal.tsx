@@ -1,12 +1,15 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePageTransition } from "./transitions/usePageTransition";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function ScrollReveal() {
+  const { isTransitioning } = usePageTransition();
+
   useLayoutEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || !document.querySelector(".value-section")) return;
@@ -21,6 +24,8 @@ export default function ScrollReveal() {
         scrollTrigger: {
           trigger: els[0],
           start: "top 85%",
+          once: true,
+          invalidateOnRefresh: true,
         },
       });
     };
@@ -38,10 +43,32 @@ export default function ScrollReveal() {
     reveal(".cta-section", { y: 40, opacity: 0, duration: 1.2 });
     reveal(".footer", { y: 30, opacity: 0, duration: 1 });
 
+    // Re-measure triggers once layout is final: after images load and a grace
+    // period, so late-loading hero/destination imagery doesn't throw off the
+    // "top 85%" scroll-start points (which otherwise fire instantly => no
+    // visible animation).
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    window.addEventListener("resize", refresh);
+    const t = window.setTimeout(refresh, 900);
+
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      window.removeEventListener("load", refresh);
+      window.removeEventListener("resize", refresh);
+      window.clearTimeout(t);
+      ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
+
+  // When landing on Home through the cross transition, the page mounts behind
+  // the shutter; re-measure ScrollTrigger once the reveal completes so anything
+  // already in viewport animates properly.
+  useEffect(() => {
+    if (!isTransitioning) {
+      const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isTransitioning]);
 
   return null;
 }
