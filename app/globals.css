@@ -227,7 +227,7 @@ img {
   width: 1px;
 }
 .page-frame-stroke.line-left {
-  width: 0.5px;
+  width: 1px;
 }
 .page-frame-line.line-right,
 .page-frame-stroke.line-right {
@@ -237,7 +237,7 @@ img {
   width: 1px;
 }
 .page-frame-stroke.line-right {
-  width: 0.5px;
+  width: 1px;
 }
 .page-frame-line.line-top,
 .page-frame-stroke.line-top {
@@ -247,7 +247,7 @@ img {
   height: 1px;
 }
 .page-frame-stroke.line-top {
-  height: 0.5px;
+  height: 1px;
 }
 .page-frame-line.line-bottom,
 .page-frame-stroke.line-bottom {
@@ -257,7 +257,7 @@ img {
   height: 1px;
 }
 .page-frame-stroke.line-bottom {
-  height: 0.5px;
+  height: 1px;
 }
 .page-frame-line::before {
   content: "";

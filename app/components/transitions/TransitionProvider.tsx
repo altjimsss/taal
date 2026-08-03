@@ -38,9 +38,17 @@ const SECONDARY_DELAY =
   CONVERGE_PRIMARY_DURATION - CONVERGE_SECONDARY_DURATION;
 const RETREAT_DURATION = 0.5;
 const DESCEND_DURATION = 0.2;
-const STROKE_WIDTH = 0.5;
-const CENTER_STROKE_BOTTOM = `calc(50vh - ${STROKE_WIDTH}px)`;
-const CENTER_STROKE_RIGHT = `calc(50vw - ${STROKE_WIDTH}px)`;
+
+function getCenter() {
+  if (typeof window === "undefined") return { xL: 0, xR: 0, yT: 0, yB: 0 };
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const xL = Math.round((vw - 1) / 2);
+  const xR = vw - xL - 1;
+  const yT = Math.round((vh - 1) / 2);
+  const yB = vh - yT - 1;
+  return { xL, xR, yT, yB };
+}
 
 function getPathFromHref(href: string) {
   try {
@@ -138,16 +146,17 @@ export default function TransitionProvider({
   const lockCenterCross = useCallback(() => {
     const lines = lineRefs.current;
     const strokes = strokeRefs.current;
+    const { xL, xR, yT, yB } = getCenter();
 
-    gsap.set(lines.top, { top: "50vh" });
-    gsap.set(lines.bottom, { bottom: "50vh" });
-    gsap.set(lines.left, { left: "50vw" });
-    gsap.set(lines.right, { right: "50vw" });
+    gsap.set(lines.top, { top: yT });
+    gsap.set(lines.bottom, { bottom: yB });
+    gsap.set(lines.left, { left: xL });
+    gsap.set(lines.right, { right: xR });
 
-    gsap.set(strokes.top, { top: "50vh" });
-    gsap.set(strokes.bottom, { bottom: CENTER_STROKE_BOTTOM });
-    gsap.set(strokes.left, { left: "50vw" });
-    gsap.set(strokes.right, { right: CENTER_STROKE_RIGHT });
+    gsap.set(strokes.top, { top: yT });
+    gsap.set(strokes.bottom, { bottom: yB });
+    gsap.set(strokes.left, { left: xL });
+    gsap.set(strokes.right, { right: xR });
   }, []);
 
   const prefetch = useCallback(
@@ -171,6 +180,8 @@ export default function TransitionProvider({
         document.documentElement.classList.add("shutter-active");
         gsap.set(getLinePair("bottom"), { bottom: -4 });
 
+        const { xL, xR, yT, yB } = getCenter();
+
         const tl = gsap.timeline({
           onComplete: () => {
             lockCenterCross();
@@ -186,7 +197,7 @@ export default function TransitionProvider({
         tl.to(
           getLine("bottom"),
           {
-            bottom: "50vh",
+            bottom: yB,
             duration: CONVERGE_PRIMARY_DURATION,
             ease: "power2.inOut",
           },
@@ -195,7 +206,7 @@ export default function TransitionProvider({
         tl.to(
           getStroke("bottom"),
           {
-            bottom: CENTER_STROKE_BOTTOM,
+            bottom: yB,
             duration: CONVERGE_PRIMARY_DURATION,
             ease: "power2.inOut",
           },
@@ -204,7 +215,7 @@ export default function TransitionProvider({
         tl.to(
           getLinePair("left"),
           {
-            left: "50vw",
+            left: xL,
             duration: CONVERGE_PRIMARY_DURATION,
             ease: "power2.inOut",
           },
@@ -213,7 +224,7 @@ export default function TransitionProvider({
         tl.to(
           getLinePair("top"),
           {
-            top: "50vh",
+            top: yT,
             duration: CONVERGE_SECONDARY_DURATION,
             ease: "power2.inOut",
           },
@@ -222,7 +233,7 @@ export default function TransitionProvider({
         tl.to(
           getLine("right"),
           {
-            right: "50vw",
+            right: xR,
             duration: CONVERGE_SECONDARY_DURATION,
             ease: "power2.inOut",
           },
@@ -231,7 +242,7 @@ export default function TransitionProvider({
         tl.to(
           getStroke("right"),
           {
-            right: CENTER_STROKE_RIGHT,
+            right: xR,
             duration: CONVERGE_SECONDARY_DURATION,
             ease: "power2.inOut",
           },

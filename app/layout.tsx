@@ -38,6 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${playfair.variable} ${inter.variable} antialiased`}
     >
       <body className="bg-ivory text-ink font-sans">
