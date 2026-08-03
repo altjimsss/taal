@@ -24,6 +24,35 @@
   --color-gold: #3a7bd5;
   --color-pine: #27415f;
   --color-hairline: rgba(21, 38, 60, 0.16);
+
+  /* shadcn-style tokens used by components/ui */
+  --color-card: #ffffff;
+  --color-card-foreground: #15263c;
+  --color-primary: #1e4f9c;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #dbe6f2;
+  --color-secondary-foreground: #15263c;
+  --color-muted: #eef3fa;
+  --color-muted-foreground: #5b6c84;
+  --color-accent: #dbe6f2;
+  --color-accent-foreground: #15263c;
+  --color-destructive: #b91c1c;
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(21, 38, 60, 0.16);
+  --color-input: #cbd5e1;
+  --color-ring: #1e4f9c;
+}
+
+/* Tailwind v4 defaults border-color to currentColor; the shadcn components
+   (built for v3) rely on a themed default border. Restore that behavior. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
 }
 
 html {
@@ -177,37 +206,97 @@ img {
 }
 
 /* ===== ARCHITECTURAL FRAME LINES & SQUARES ===== */
-.page-frame-line {
+.page-frame-line,
+.page-frame-stroke {
   position: fixed;
-  z-index: 1001;
   pointer-events: none;
-  background-color: #ffffff;
-  mix-blend-mode: difference;
-  opacity: 0.45;
 }
-.page-frame-line.line-left {
+.page-frame-line {
+  z-index: 9999;
+  background: transparent;
+}
+.page-frame-stroke {
+  z-index: 10000;
+  background: #d7dbe1;
+}
+.page-frame-line.line-left,
+.page-frame-stroke.line-left {
   top: 0;
   bottom: 0;
   left: 72px;
   width: 1px;
-  transform: scaleX(0.5);
-  transform-origin: left center;
 }
-.page-frame-line.line-right {
+.page-frame-stroke.line-left {
+  width: 0.5px;
+}
+.page-frame-line.line-right,
+.page-frame-stroke.line-right {
   top: 0;
   bottom: 0;
   right: 72px;
   width: 1px;
-  transform: scaleX(0.5);
-  transform-origin: right center;
 }
-.page-frame-line.line-top {
+.page-frame-stroke.line-right {
+  width: 0.5px;
+}
+.page-frame-line.line-top,
+.page-frame-stroke.line-top {
   top: 72px;
   left: 0;
   right: 0;
   height: 1px;
-  transform: scaleY(0.5);
-  transform-origin: center top;
+}
+.page-frame-stroke.line-top {
+  height: 0.5px;
+}
+.page-frame-line.line-bottom,
+.page-frame-stroke.line-bottom {
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+.page-frame-stroke.line-bottom {
+  height: 0.5px;
+}
+.page-frame-line::before {
+  content: "";
+  position: absolute;
+  background: #ffffff;
+  mix-blend-mode: normal;
+  opacity: 0;
+  pointer-events: none;
+}
+.page-frame-line.line-top::before {
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 200vh;
+}
+.page-frame-line.line-bottom::before {
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 200vh;
+}
+.page-frame-line.line-left::before {
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: 200vw;
+}
+.page-frame-line.line-right::before {
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: 200vw;
+}
+html.shutter-active .page-frame-line::before {
+  opacity: 1;
+  pointer-events: auto;
+}
+html.shutter-active .page-frame-line {
+  pointer-events: auto;
 }
 
 .navbar {
@@ -243,7 +332,7 @@ img {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
+  border: 2px solid #15263c;
   display: inline-block;
   flex-shrink: 0;
   transition: border-color 0.3s ease;
@@ -254,7 +343,7 @@ img {
 
 .navbar .brand-name {
   padding-left: 20px;
-  color: #ffffff;
+  color: #15263c;
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 2.5px;
@@ -280,7 +369,7 @@ img {
 }
 
 .navbar .nav-menu a {
-  color: #ffffff;
+  color: #15263c;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.8px;
@@ -307,16 +396,17 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 0 40px;
+  justify-content: flex-end;
+  padding: 0 40px 128px;
   color: #fff;
   text-align: center;
 }
 .hero-content h1 {
-  font-size: 128px;
-  font-weight: 700;
-  letter-spacing: -3px;
-  line-height: 1;
+  font-size: 176px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  text-transform: uppercase;
 }
 .hero-content p {
   max-width: 380px;
@@ -396,6 +486,16 @@ img {
 .hero-bottom-bar .explore-btn:hover {
   background: #eef3fa;
   opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.shutter-active .page-frame-line::before {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  html.shutter-active .page-frame-line {
+    pointer-events: none !important;
+  }
 }
 
 /* ===== TRUST STRIP & BADGES ===== */
@@ -863,10 +963,18 @@ img {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  align-items: start;
 }
 .step {
-  border-top: 1px solid #eaeaea;
-  padding-top: 20px;
+  border: 1px solid #d6d6d6;
+  padding: 20px;
+  background: #fff;
+}
+.step:nth-child(2) {
+  margin-top: 80px;
+}
+.step:nth-child(3) {
+  margin-top: 160px;
 }
 .step .step-num {
   font-size: 13px;
@@ -941,37 +1049,4 @@ img {
 .cta-form input:focus {
   outline: none;
   border-color: #60a5f5;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 40px;
-  border-top: 1px solid #eaeaea;
-}
-.footer-brand {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 2px;
-}
-.footer-links {
-  display: flex;
-  gap: 22px;
-}
-.footer-links a {
-  font-size: 12px;
-  color: #555;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.footer-links a:hover {
-  color: #60a5f5;
-}
-.footer-note {
-  font-size: 11px;
-  color: #9a9a9a;
 }

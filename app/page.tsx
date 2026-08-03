@@ -1,43 +1,12 @@
-import type { Metadata } from "next";
 import HeroMount from "./components/HeroMount";
-import NavbarWrapper from "./components/NavbarWrapper";
 import ValueCarousel from "./components/ValueCarousel";
 import ScrollReveal from "./components/ScrollReveal";
-
-export const metadata: Metadata = {
-  title: "Taal — Heritage Town of the Philippines",
-  description:
-    "Preserved through time. Walk the ancestral streets and the grand Basilica. Some places are worth slowing down for.",
-};
+import { Footer2 } from "@/components/ui/footer-2";
 
 export default function Home() {
   return (
     <>
-      {/* ===== GLOBAL ARCHITECTURAL FRAME LINES ===== */}
-      <div className="page-frame-line line-left" aria-hidden="true" />
-      <div className="page-frame-line line-right" aria-hidden="true" />
-      <div className="page-frame-line line-top" aria-hidden="true" />
       <ScrollReveal />
-
-      {/* ===== NAVBAR — outside hero so overflow:hidden doesn't block blur ===== */}
-      <NavbarWrapper>
-        <div className="logo-square">
-          <span className="dot" />
-        </div>
-        <div className="brand-name">
-          TAAL
-        </div>
-        <nav className="nav-menu">
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Heritage</a></li>
-            <li><a href="#">Attractions</a></li>
-            <li><a href="#">Food</a></li>
-            <li><a href="#">Visit</a></li>
-          </ul>
-        </nav>
-        <div className="corner-square-right" />
-      </NavbarWrapper>
 
       {/* ===== HERO — full-bleed, fills the screen ===== */}
       <section className="hero">
@@ -387,20 +356,10 @@ export default function Home() {
         </form>
       </section>
 
-      {/* ===== FOOTER ===== */}
-      <footer className="footer">
-        <div className="footer-brand">TAAL</div>
-        <nav className="footer-links">
-          <a href="#">Heritage</a>
-          <a href="#">Attractions</a>
-          <a href="#">Food</a>
-          <a href="#">Visit</a>
-        </nav>
-        <div className="footer-note">
-          © 2026 Taal Heritage Town. Made for slow travelers.
-        </div>
-      </footer>
       </div>
+
+      {/* ===== FOOTER — full-width band outside the .page grid ===== */}
+      <Footer2 />
     </>
   );
 }

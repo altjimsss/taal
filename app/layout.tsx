@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Playfair } from "next/font/google";
 import "./globals.css";
+import TransitionProvider from "./components/transitions/TransitionProvider";
+import GridLines from "./components/transitions/GridLines";
+import NavbarWrapper from "./components/NavbarWrapper";
+import TransitionLink from "./components/transitions/TransitionLink";
 
 const playfair = Playfair({
   variable: "--font-fraunces",
@@ -37,7 +41,30 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} antialiased`}
     >
       <body className="bg-ivory text-ink font-sans">
-        {children}
+        <TransitionProvider>
+          <GridLines />
+
+          {/* ===== PERSISTENT NAVBAR ===== */}
+          <NavbarWrapper>
+            <div className="logo-square">
+              <span className="dot" />
+            </div>
+            <div className="brand-name">
+              TAAL
+            </div>
+            <nav className="nav-menu">
+              <ul>
+                <li><TransitionLink href="/">Home</TransitionLink></li>
+                <li><TransitionLink href="/heritage">Heritage</TransitionLink></li>
+                <li><TransitionLink href="/attractions">Attractions</TransitionLink></li>
+                <li><TransitionLink href="/food">Food</TransitionLink></li>
+                <li><TransitionLink href="/visit">Visit</TransitionLink></li>
+              </ul>
+            </nav>
+          </NavbarWrapper>
+
+          {children}
+        </TransitionProvider>
       </body>
     </html>
   );
