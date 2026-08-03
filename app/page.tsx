@@ -2,6 +2,7 @@ import HeroMount from "./components/HeroMount";
 import ValueCarousel from "./components/ValueCarousel";
 import ScrollReveal from "./components/ScrollReveal";
 import { Footer2 } from "@/components/ui/footer-2";
+import { Testimonials } from "@/components/ui/stagger-testimonials";
 
 export default function Home() {
   return (
@@ -335,28 +336,31 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="testimonial">
-          <p className="quote">
-            &ldquo;The best part of Taal was the pace. No rushing, just stories and
-            coffee on a cobblestone lane.&rdquo;
-          </p>
-          <div className="byline">— Miguel R., guided heritage walk</div>
-        </div>
-      </section>
-
-      {/* ===== NEWSLETTER / CTA ===== */}
-      <section className="cta-section">
-        <h2>Plan a slow day in Taal</h2>
-        <p className="sub">
-          Get new walks and heritage picks straight to your inbox.
-        </p>
-        <form className="cta-form">
-          <input type="email" placeholder="Your email" aria-label="Email address" />
-          <button type="submit" className="btn-flat">Get the newsletter</button>
-        </form>
+        <Testimonials />
       </section>
 
       </div>
+
+      {/* ===== NEWSLETTER / CTA — full-width band, top rule touches the grid lines ===== */}
+      <section className="cta-section relative mt-20 overflow-hidden md:mt-28">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2000&auto=format&fit=crop"
+          alt="Taal heritage town"
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="relative z-10 mx-auto max-w-[1200px] px-10 py-16 text-ivory md:py-20">
+          <h2 className="text-ivory">Plan a slow day in Taal</h2>
+          <p className="sub text-ivory/80">
+            Get new walks and heritage picks straight to your inbox.
+          </p>
+          <form className="cta-form">
+            <input type="email" placeholder="Your email" aria-label="Email address" />
+            <button type="submit" className="btn-flat">Get the newsletter</button>
+          </form>
+        </div>
+      </section>
 
       {/* ===== FOOTER — full-width band outside the .page grid ===== */}
       <Footer2 />

@@ -48,7 +48,12 @@ export default function RootLayout({
           {/* ===== PERSISTENT NAVBAR ===== */}
           <NavbarWrapper>
             <div className="logo-square">
-              <span className="dot" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/taalmapicon.svg"
+                alt="Taal map icon"
+                className="logo-img"
+              />
             </div>
             <div className="brand-name">
               TAAL

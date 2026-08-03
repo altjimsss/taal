@@ -1,55 +1,32 @@
 "use client";
 
 import type { SVGProps } from "react";
-import { buttonVariants } from "@/components/ui/button";
-import { PlayStoreIcon } from "@/components/ui/play-store-button";
-import { AppleIcon } from "@/components/ui/app-store-button";
 
 const footerLinks = [
   {
     title: "Explore",
     links: [
       { href: "#", label: "The Town" },
-      { href: "#", label: "Heritage & History" },
       { href: "#", label: "Basilica of Taal" },
       { href: "#", label: "Ancestral Houses" },
       { href: "#", label: "Museums" },
-      { href: "#", label: "What’s New" },
-      { href: "#", label: "About Us" },
-      { href: "#", label: "Blog" },
     ],
   },
   {
     title: "Plan Your Visit",
     links: [
       { href: "#", label: "Heritage Walks" },
-      { href: "#", label: "Book a Guide" },
       { href: "#", label: "Food & Coffee" },
       { href: "#", label: "Getting Here" },
       { href: "#", label: "Events" },
-      { href: "#", label: "Travel Guide" },
     ],
   },
   {
     title: "Support",
     links: [
       { href: "#", label: "Help Topics" },
-      { href: "#", label: "Getting Started" },
       { href: "#", label: "Contact Us" },
-      { href: "#", label: "Features & How-tos" },
       { href: "#", label: "FAQs" },
-      { href: "#", label: "Report an Issue" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { href: "#", label: "Terms & Conditions" },
-      { href: "#", label: "Privacy Notice" },
-      { href: "#", label: "Cookie Notice" },
-      { href: "#", label: "Trust Center" },
-      { href: "#", label: "Cookie Preferences" },
-      { href: "#", label: "Accessibility" },
     ],
   },
 ];
@@ -96,17 +73,17 @@ const socialLinks = [
 
 export function Footer2() {
   return (
-    <footer className="bg-card/60 border-t flex justify-center">
-      <div className="w-full max-w-[1200px] px-10">
+    <footer className="border-t border-ink/10 bg-[#111] text-white" style={{ margin: "0 72px" }}>
+      <div className="mx-auto w-full max-w-[1200px] px-10">
         {/* Grid container with headings and links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 pb-8">
+        <div className="grid grid-cols-2 gap-8 pt-12 pb-8 md:grid-cols-3">
           {footerLinks.map((item, i) => (
             <div key={i}>
               <h3 className="mb-4 text-xs">{item.title}</h3>
-              <ul className="space-y-2 text-muted-foreground text-sm">
+              <ul className="space-y-2 text-sm text-white/60">
                 {item.links.map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className="hover:text-foreground">
+                    <a href={link.href} className="transition-colors hover:text-white">
                       {link.label}
                     </a>
                   </li>
@@ -115,61 +92,32 @@ export function Footer2() {
             </div>
           ))}
         </div>
-        <div className="h-px bg-border" />
-        {/* Social Buttons + App Links */}
-        <div className="py-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex gap-2 items-center">
+      </div>
+      <div
+        className="h-px w-full bg-white/15"
+        style={{ marginLeft: -72, marginRight: -72 }}
+      />
+      <div className="mx-auto w-full max-w-[1200px] px-10">
+        {/* Social Icons + Copyright */}
+        <div className="flex flex-col items-center justify-between gap-4 py-5 md:flex-row">
+          <div className="flex items-center gap-3">
             {socialLinks.map(({ icon: Icon, href, label }, i) => (
               <a
                 href={href}
                 aria-label={label}
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "icon",
-                })}
                 key={i}
+                className="text-white/40 transition-colors hover:text-white"
               >
-                <Icon className="size-5 text-muted-foreground" />
+                <Icon className="size-4" />
               </a>
             ))}
           </div>
-
-          {/* Store badges as links (buttonVariants directly on <a> — no
-              nested interactive elements like the template's <a><button>). */}
-          <div className="flex gap-4">
-            <a
-              href="#"
-              className={buttonVariants({ className: "h-11 gap-2" })}
-            >
-              <AppleIcon className="size-5" />
-              <div className="text-left flex flex-col items-start justify-center pr-2">
-                <span className="text-[10px] leading-none tracking-tighter">
-                  Download on the
-                </span>
-                <p className="text-base font-bold leading-none">App Store</p>
-              </div>
-            </a>
-
-            <a
-              href="#"
-              className={buttonVariants({ className: "h-11 gap-2" })}
-            >
-              <PlayStoreIcon className="size-5" />
-              <div className="text-left flex flex-col items-start justify-center pr-2">
-                <span className="text-[10px] leading-none font-light tracking-tighter">
-                  GET IT ON
-                </span>
-                <p className="text-base font-bold leading-none">Google Play</p>
-              </div>
-            </a>
+          <div className="text-center text-xs text-white/60">
+            <p>
+              © {new Date().getFullYear()} Taal Heritage Town. All rights
+              reserved.
+            </p>
           </div>
-        </div>
-        <div className="h-px bg-border" />
-        <div className="text-center text-xs text-muted-foreground py-4">
-          <p>
-            © {new Date().getFullYear()} Taal Heritage Town. All rights
-            reserved.
-          </p>
         </div>
       </div>
     </footer>
