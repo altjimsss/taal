@@ -19,10 +19,19 @@ export default function NavbarWrapper({
     const el = ref.current;
     if (!el) return;
 
+    const isHome = pathname === "/";
+
     const update = () => {
-      const past = window.scrollY >= window.innerHeight - 72;
-      el.classList.toggle("navbar--scrolled", past);
-      el.classList.toggle("navbar--hero", pathname === "/" && !past);
+      if (!isHome) {
+        // Sub-pages: always show white navbar
+        el.classList.add("navbar--scrolled");
+        el.classList.remove("navbar--hero");
+      } else {
+        // Homepage: white only after scrolling past the hero
+        const past = window.scrollY >= window.innerHeight - 72;
+        el.classList.toggle("navbar--scrolled", past);
+        el.classList.toggle("navbar--hero", !past);
+      }
     };
 
     update();

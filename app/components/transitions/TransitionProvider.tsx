@@ -23,6 +23,8 @@ type TransitionContextValue = {
   registerStroke: (key: keyof LineRefs, el: HTMLDivElement | null) => void;
   prefetch: (href: string) => void;
   navigate: (href: string) => void;
+  openShutter: () => Promise<void>;
+  lockCenterCross: () => void;
   isTransitioning: boolean;
 };
 
@@ -343,6 +345,8 @@ export default function TransitionProvider({
         registerStroke,
         prefetch,
         navigate,
+        openShutter,
+        lockCenterCross,
         isTransitioning,
       }}
     >

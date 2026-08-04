@@ -5,6 +5,7 @@ import TransitionProvider from "./components/transitions/TransitionProvider";
 import GridLines from "./components/transitions/GridLines";
 import NavbarWrapper from "./components/NavbarWrapper";
 import TransitionLink from "./components/transitions/TransitionLink";
+import IntroScreen from "./components/IntroScreen";
 
 const playfair = Playfair({
   variable: "--font-fraunces",
@@ -44,6 +45,7 @@ export default function RootLayout({
       <body className="bg-ivory text-ink font-sans">
         <TransitionProvider>
           <GridLines />
+          <IntroScreen />
 
           {/* ===== PERSISTENT NAVBAR ===== */}
           <NavbarWrapper>

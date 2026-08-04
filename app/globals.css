@@ -22,6 +22,7 @@
   --color-ink-soft: #5b6c84;
   --color-rust: #1e4f9c;
   --color-gold: #3a7bd5;
+  --color-sky: #60a5fa;
   --color-pine: #27415f;
   --color-hairline: rgba(21, 38, 60, 0.16);
 
@@ -116,17 +117,21 @@ body {
   animation: marquee-x 28s linear infinite;
 }
 
-/* scroll reveal */
-@keyframes fade-up {
-  from {
+/* dropdown accordion animation */
+@keyframes dropdown {
+  0% {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(-8px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
+.animate-dropdown {
+  animation: dropdown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .reveal {
   opacity: 1;
 }
@@ -779,7 +784,7 @@ html.shutter-active .page-frame-line {
   margin-bottom: 30px;
 }
 .filter-bar .field {
-  padding: 16px 22px;
+  padding: 10px 22px;
   border-right: 1px solid #eaeaea;
 }
 .filter-bar .field .label {
@@ -805,6 +810,25 @@ html.shutter-active .page-frame-line {
 }
 .filter-bar .discover:hover {
   background: #60a5fa;
+}
+
+/* ===== CLEAN SCROLLBAR ===== */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #d4c5b0 transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #d4c5b0;
+  border-radius: 99px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #b8a898;
 }
 
 .destinations {
@@ -1105,4 +1129,57 @@ html.shutter-active .page-frame-line {
 .cta-form input:focus {
   outline: none;
   border-color: #60a5f5;
+}
+
+/* ===== LEAFLET CUSTOM POPUP CARD ===== */
+.taal-leaflet-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+.taal-leaflet-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+.taal-leaflet-popup .leaflet-popup-tip-container {
+  display: none;
+}
+.taal-popup {
+  width: 180px;
+  background: #fff;
+  border: 1px solid #e8e2d9;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  border-radius: 0;
+  overflow: hidden;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+}
+.taal-popup-img {
+  width: 100%;
+  height: 110px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.taal-popup-body {
+  padding: 8px 10px 10px;
+  border-top: 1px solid #e8e2d9;
+}
+.taal-popup-cat {
+  display: block;
+  font-size: 8px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #60a5fa;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.taal-popup-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.35;
 }
