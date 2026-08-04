@@ -3,10 +3,30 @@
 import { usePageTransition } from "./usePageTransition";
 
 export default function GridLines() {
-  const { registerLine, registerStroke } = usePageTransition();
+  const { registerLine, registerStroke, registerDot } = usePageTransition();
 
   return (
     <>
+      <div
+        ref={(el) => registerDot("tl", el)}
+        className="page-frame-dot dot-tl"
+        aria-hidden="true"
+      />
+      <div
+        ref={(el) => registerDot("tr", el)}
+        className="page-frame-dot dot-tr"
+        aria-hidden="true"
+      />
+      <div
+        ref={(el) => registerDot("bl", el)}
+        className="page-frame-dot dot-bl"
+        aria-hidden="true"
+      />
+      <div
+        ref={(el) => registerDot("br", el)}
+        className="page-frame-dot dot-br"
+        aria-hidden="true"
+      />
       <div
         ref={(el) => registerLine("left", el)}
         className="page-frame-line line-left"

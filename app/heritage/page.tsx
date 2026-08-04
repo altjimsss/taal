@@ -155,7 +155,7 @@ export default function HeritagePage() {
 
               {/* Craft Highlights — Flat Magazine Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-                <div className="p-6 bg-white border border-hairline rounded-none flex flex-col justify-between transition-all duration-300 hover:border-rust/60">
+                <div data-reveal data-reveal-group="crafts" className="p-6 bg-white border border-hairline rounded-none flex flex-col justify-between transition-all duration-300 hover:border-rust/60">
                   <div>
                     <span className="text-[9px] uppercase tracking-widest font-mono text-rust block mb-1">Tradition</span>
                     <h3 className="font-sans text-base font-medium text-ink mb-2">Burdang Taal</h3>
@@ -169,7 +169,7 @@ export default function HeritagePage() {
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border border-hairline rounded-none flex flex-col justify-between transition-all duration-300 hover:border-rust/60">
+                <div data-reveal data-reveal-group="crafts" className="p-6 bg-white border border-hairline rounded-none flex flex-col justify-between transition-all duration-300 hover:border-rust/60">
                   <div>
                     <span className="text-[9px] uppercase tracking-widest font-mono text-rust block mb-1">Steel Craft</span>
                     <h3 className="font-sans text-base font-medium text-ink mb-2">Balisong Forging</h3>
@@ -186,7 +186,7 @@ export default function HeritagePage() {
             </section>
 
             {/* Right Column: Interactive Chronology Panel */}
-            <section className="lg:col-span-5 border border-hairline rounded-none p-8 bg-white shadow-xs">
+            <section data-reveal className="lg:col-span-5 border border-hairline rounded-none p-8 bg-white shadow-xs">
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-hairline">
                 <h3 className="font-sans text-lg font-light flex items-center gap-2 text-ink">
                   <Calendar className="w-4 h-4 text-rust" />
@@ -240,6 +240,8 @@ export default function HeritagePage() {
               {historicalFigures.map((fig, idx) => (
                 <div 
                   key={idx} 
+                  data-reveal
+                  data-reveal-group="figures"
                   className="group bg-white border border-hairline rounded-none overflow-hidden hover:border-rust/60 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
@@ -279,7 +281,7 @@ export default function HeritagePage() {
           </section>
 
           {/* Flat Editorial Banner CTA */}
-          <section className="bg-ink text-white rounded-none p-10 md:p-14 text-center relative overflow-hidden border border-hairline shadow-xs mb-12">
+          <section data-reveal className="bg-ink text-white rounded-none p-10 md:p-14 text-center relative overflow-hidden border border-hairline shadow-xs mb-12">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.15),transparent)] pointer-events-none" />
             <span className="text-[9px] uppercase tracking-widest font-mono text-sky block mb-3">Immersive History</span>
             <h3 className="font-sans text-3xl md:text-4xl font-light mb-4">Experience the Legacy Firsthand</h3>

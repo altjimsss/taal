@@ -1,13 +1,11 @@
 import HeroMount from "./components/HeroMount";
 import ValueCarousel from "./components/ValueCarousel";
-import ScrollReveal from "./components/ScrollReveal";
 import { Footer2 } from "@/components/ui/footer-2";
 import { Testimonials } from "@/components/ui/stagger-testimonials";
 
 export default function Home() {
   return (
     <>
-      <ScrollReveal />
 
       {/* ===== HERO — full-bleed, fills the screen ===== */}
       <section className="hero">
@@ -21,6 +19,8 @@ export default function Home() {
         </div>
         {/* ===== HERO BOTTOM BAR (Framed by 72px grid) ===== */}
         <div className="hero-bottom-bar">
+          <span className="hero-star hero-star-left" aria-hidden="true" />
+          <span className="hero-star hero-star-right" aria-hidden="true" />
           <div className="corner-square-bottom-left" />
           <div className="hero-search-inner">
             <div className="field">

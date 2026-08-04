@@ -6,6 +6,7 @@ import GridLines from "./components/transitions/GridLines";
 import NavbarWrapper from "./components/NavbarWrapper";
 import TransitionLink from "./components/transitions/TransitionLink";
 import IntroScreen from "./components/IntroScreen";
+import ScrollReveal from "./components/ScrollReveal";
 
 const playfair = Playfair({
   variable: "--font-fraunces",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <TransitionProvider>
           <GridLines />
           <IntroScreen />
+          <ScrollReveal />
 
           {/* ===== PERSISTENT NAVBAR ===== */}
           <NavbarWrapper>

@@ -273,7 +273,7 @@ export default function AttractionsPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
         </div>
-        <div className="relative z-10 w-full flex flex-col md:flex-row md:items-end justify-between gap-6 px-10 pb-8">
+        <div data-reveal className="relative z-10 w-full flex flex-col md:flex-row md:items-end justify-between gap-6 px-10 pb-8">
           <div>
             <span className="inline-block bg-white/20 backdrop-blur-sm text-[10px] uppercase tracking-wider px-3 py-1 text-white border border-white/20 mb-3 rounded-none">
               Destination Guide

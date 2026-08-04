@@ -88,7 +88,7 @@ export default function VisitPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {travelTips.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="border border-hairline p-6 group hover:border-rust transition-colors duration-300">
+                <div key={title} data-reveal data-reveal-group="tips" className="border border-hairline p-6 group hover:border-rust transition-colors duration-300">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-9 h-9 rounded-full bg-ink/5 flex items-center justify-center group-hover:bg-rust/10 transition-colors duration-300">
                       <Icon className="w-4 h-4 text-ink-soft group-hover:text-rust transition-colors duration-300" />
@@ -113,7 +113,7 @@ export default function VisitPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {practicalInfo.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="flex gap-5 border-b border-hairline pb-8">
+                <div key={title} data-reveal data-reveal-group="info" className="flex gap-5 border-b border-hairline pb-8">
                   <div className="shrink-0 w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center mt-0.5">
                     <Icon className="w-4 h-4 text-rust" />
                   </div>
@@ -134,7 +134,7 @@ export default function VisitPage() {
                 <h2 className="font-sans text-3xl font-light">Find Us on the Map</h2>
               </div>
             </div>
-            <div className="border border-hairline overflow-hidden h-[380px] relative">
+            <div data-reveal className="border border-hairline overflow-hidden h-[380px] relative">
               <iframe
                 title="Taal, Batangas Map"
                 src="https://www.openstreetmap.org/export/embed.html?bbox=120.85%2C13.85%2C120.97%2C13.95&layer=mapnik&marker=13.8993%2C120.9143"

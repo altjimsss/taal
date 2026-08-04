@@ -18,9 +18,13 @@ type LineRefs = {
   right: HTMLDivElement | null;
 };
 
+type DotKey = "tl" | "tr" | "bl" | "br";
+type DotRefs = Record<DotKey, HTMLDivElement | null>;
+
 type TransitionContextValue = {
   registerLine: (key: keyof LineRefs, el: HTMLDivElement | null) => void;
   registerStroke: (key: keyof LineRefs, el: HTMLDivElement | null) => void;
+  registerDot: (key: DotKey, el: HTMLDivElement | null) => void;
   prefetch: (href: string) => void;
   navigate: (href: string) => void;
   openShutter: () => Promise<void>;
@@ -86,6 +90,12 @@ export default function TransitionProvider({
     left: null,
     right: null,
   });
+  const dotRefs = useRef<DotRefs>({
+    tl: null,
+    tr: null,
+    bl: null,
+    br: null,
+  });
   const reducedMotionRef = useRef(false);
   const pendingPathRef = useRef<string | null>(null);
   const hasPushedRef = useRef(false);
@@ -113,6 +123,14 @@ export default function TransitionProvider({
     [],
   );
 
+  const registerDot = useCallback((key: DotKey, el: HTMLDivElement | null) => {
+    dotRefs.current[key] = el;
+  }, []);
+
+  const getDots = useCallback((keys: DotKey[]) => {
+    return keys.map((k) => dotRefs.current[k]).filter(Boolean);
+  }, []);
+
   const getLinePair = useCallback((key: keyof LineRefs) => {
     return [lineRefs.current[key], strokeRefs.current[key]].filter(Boolean);
   }, []);
@@ -137,6 +155,7 @@ export default function TransitionProvider({
   const lockCenterCross = useCallback(() => {
     const lines = lineRefs.current;
     const strokes = strokeRefs.current;
+    const dots = dotRefs.current;
     const { xL, xR, yT, yB } = getCenter();
 
     gsap.set(lines.top, { top: yT });
@@ -148,6 +167,11 @@ export default function TransitionProvider({
     gsap.set(strokes.bottom, { bottom: yB + 0.5 });
     gsap.set(strokes.left, { left: xL });
     gsap.set(strokes.right, { right: xR + 0.5 });
+
+    gsap.set(dots.tl, { top: yT, left: xL });
+    gsap.set(dots.tr, { top: yT, right: xR });
+    gsap.set(dots.bl, { bottom: yB, left: xL });
+    gsap.set(dots.br, { bottom: yB, right: xR });
   }, []);
 
   const prefetch = useCallback(
@@ -170,6 +194,7 @@ export default function TransitionProvider({
 
         document.documentElement.classList.add("shutter-active");
         gsap.set(getLinePair("bottom"), { bottom: -4 });
+        gsap.set(getDots(["bl", "br"]), { bottom: -4 });
 
         const { xL, xR, yT, yB } = getCenter();
 
@@ -185,6 +210,15 @@ export default function TransitionProvider({
           duration: RISE_DURATION,
           ease: "power2.out",
         });
+        tl.to(
+          getDots(["bl", "br"]),
+          {
+            bottom: GRID,
+            duration: RISE_DURATION,
+            ease: "power2.out",
+          },
+          "<",
+        );
         tl.to(
           getLinePair("top"),
           {
@@ -221,13 +255,49 @@ export default function TransitionProvider({
           },
           "<",
         );
+        tl.to(
+          getDots(["tl", "tr"]),
+          {
+            top: yT,
+            duration: CONVERGE_DURATION,
+            ease: "power2.inOut",
+          },
+          "<",
+        );
+        tl.to(
+          getDots(["bl", "br"]),
+          {
+            bottom: yB,
+            duration: CONVERGE_DURATION,
+            ease: "power2.inOut",
+          },
+          "<",
+        );
+        tl.to(
+          getDots(["tl", "bl"]),
+          {
+            left: xL,
+            duration: CONVERGE_DURATION,
+            ease: "power2.inOut",
+          },
+          "<",
+        );
+        tl.to(
+          getDots(["tr", "br"]),
+          {
+            right: xR,
+            duration: CONVERGE_DURATION,
+            ease: "power2.inOut",
+          },
+          "<",
+        );
       } catch (err) {
         console.warn("closeShutter GSAP error:", err);
         document.documentElement.classList.remove("shutter-active");
         resolve();
       }
     });
-  }, [getAllLines, getLinePair, lockCenterCross]);
+  }, [getAllLines, getDots, getLinePair, lockCenterCross]);
 
   const openShutter = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -239,6 +309,9 @@ export default function TransitionProvider({
           onComplete: () => {
             document.documentElement.classList.remove("shutter-active");
             gsap.set(allLines, { clearProps: "top,bottom,left,right" });
+            gsap.set(getDots(["tl", "tr", "bl", "br"]), {
+              clearProps: "top,bottom,left,right",
+            });
             resolve();
           },
         });
@@ -263,18 +336,47 @@ export default function TransitionProvider({
           { right: GRID, duration: RETREAT_DURATION, ease: "power2.out" },
           "<",
         );
+        tl.to(
+          getDots(["tl", "tr"]),
+          { top: GRID, duration: RETREAT_DURATION, ease: "power2.out" },
+          "<",
+        );
+        tl.to(
+          getDots(["bl", "br"]),
+          { bottom: GRID, duration: RETREAT_DURATION, ease: "power2.out" },
+          "<",
+        );
+        tl.to(
+          getDots(["tl", "bl"]),
+          { left: GRID, duration: RETREAT_DURATION, ease: "power2.out" },
+          "<",
+        );
+        tl.to(
+          getDots(["tr", "br"]),
+          { right: GRID, duration: RETREAT_DURATION, ease: "power2.out" },
+          "<",
+        );
         tl.to(getLinePair("bottom"), {
           bottom: -4,
           duration: DESCEND_DURATION,
           ease: "power2.in",
         });
+        tl.to(
+          getDots(["bl", "br"]),
+          {
+            bottom: -4,
+            duration: DESCEND_DURATION,
+            ease: "power2.in",
+          },
+          "<",
+        );
       } catch (err) {
         console.warn("openShutter GSAP error:", err);
         document.documentElement.classList.remove("shutter-active");
         resolve();
       }
     });
-  }, [getAllLines, getLinePair]);
+  }, [getDots, getAllLines, getLinePair]);
 
   useEffect(() => {
     const pendingPath = pendingPathRef.current;
@@ -343,6 +445,7 @@ export default function TransitionProvider({
       value={{
         registerLine,
         registerStroke,
+        registerDot,
         prefetch,
         navigate,
         openShutter,

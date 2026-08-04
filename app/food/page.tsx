@@ -175,7 +175,7 @@ export default function FoodPage() {
             </div>
 
             {/* 3 Horizontal x 2 Vertical Square Grid without Inner Gaps */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-hairline bg-white shadow-xs">
+            <div data-reveal className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-hairline bg-white shadow-xs">
               {cuisines.map((cuisine, idx) => {
                 const isFlipped = flipped[idx];
                 return (
@@ -309,6 +309,8 @@ export default function FoodPage() {
                 return (
                   <div
                     key={idx}
+                    data-reveal
+                    data-reveal-group="dests"
                     className="group bg-white border border-hairline rounded-none overflow-hidden hover:border-rust/60 transition-all duration-300 flex flex-col sm:flex-row justify-between"
                   >
                     <div className="sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden relative border-b sm:border-b-0 sm:border-r border-hairline bg-linen shrink-0">

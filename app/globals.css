@@ -334,6 +334,46 @@ html.shutter-active .page-frame-line {
   pointer-events: auto;
 }
 
+/* ===== GRID INTERSECTION DOTS ===== */
+.page-frame-dot {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  background: #d7dbe1;
+  clip-path: polygon(
+    50% 0%,
+    61% 39%,
+    100% 50%,
+    61% 61%,
+    50% 100%,
+    39% 61%,
+    0% 50%,
+    39% 39%
+  );
+  z-index: 10001;
+  pointer-events: none;
+}
+.page-frame-dot.dot-tl {
+  left: 72px;
+  top: 72px;
+  transform: translate(-50%, -50%);
+}
+.page-frame-dot.dot-tr {
+  right: 72px;
+  top: 72px;
+  transform: translate(50%, -50%);
+}
+.page-frame-dot.dot-bl {
+  left: 72px;
+  bottom: -4px;
+  transform: translate(-50%, 50%);
+}
+.page-frame-dot.dot-br {
+  right: 72px;
+  bottom: -4px;
+  transform: translate(50%, 50%);
+}
+
 .navbar {
   position: fixed;
   top: 0;
@@ -525,6 +565,32 @@ html.shutter-active .page-frame-line {
 .hero-bottom-bar .explore-btn:hover {
   background: #eef3fa;
   opacity: 0.9;
+}
+.hero-bottom-bar .hero-star {
+  position: absolute;
+  top: -1px;
+  width: 14px;
+  height: 14px;
+  background: #d7dbe1;
+  clip-path: polygon(
+    50% 0%,
+    61% 39%,
+    100% 50%,
+    61% 61%,
+    50% 100%,
+    39% 61%,
+    0% 50%,
+    39% 39%
+  );
+  pointer-events: none;
+}
+.hero-bottom-bar .hero-star-left {
+  left: 72px;
+  transform: translate(-50%, -50%);
+}
+.hero-bottom-bar .hero-star-right {
+  right: 72px;
+  transform: translate(50%, -50%);
 }
 
 @media (prefers-reduced-motion: reduce) {
